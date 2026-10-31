@@ -6,6 +6,8 @@ Overachiever Reborn is a community rebuild of the original Overachiever tweak fo
 
 The tweak loads into the configured GameKit host and waits for an authenticated `GKLocalPlayer`. It asynchronously loads the game's achievement descriptions and the local player's existing achievements. Each described achievement that is not already complete is represented by a `GKAchievement` with `percentComplete` set to `100`, then submitted through `reportAchievements:withCompletionHandler:`. Authentication changes trigger another attempt, while completed and already-submitted identifiers are skipped to avoid unnecessary duplicate reports.
 
+The tweak requests a Game Center completion banner for every newly submitted achievement, so a sync of many achievements produces a visible completion notification for each one when iOS/Game Center permits it.
+
 The legacy preference file is read directly from:
 
 `/var/mobile/Library/Preferences/de.ingmarstein.overachiever.plist`

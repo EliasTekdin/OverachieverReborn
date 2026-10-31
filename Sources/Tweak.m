@@ -176,7 +176,7 @@ static void OverachieverRequestSync(NSString *reason) {
 
                             GKAchievement *achievement = [[GKAchievement alloc] initWithIdentifier:identifier];
                             achievement.percentComplete = 100.0;
-                            achievement.showsCompletionBanner = NO;
+                            achievement.showsCompletionBanner = YES;
                             [toSubmit addObject:achievement];
                             [submittedIdentifiers addObject:identifier];
                             [knownSubmissions addObject:identifier];

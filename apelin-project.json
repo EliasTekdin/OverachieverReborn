@@ -63,13 +63,14 @@
   "package": {
     "id": "com.ilyastekdin.overachieverreborn",
     "name": "Overachiever Reborn",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Community rebuild of Overachiever for rootless and roothide jailbreaks.",
     "longDescription": [
       "A community rebuild of Overachiever for modern rootless and roothide jailbreak environments.",
       "When enabled, it loads Game Center achievement descriptions and current progress, then reports incomplete achievements at 100 percent.",
       "It observes Game Center authentication changes and avoids repeating completed or already-submitted achievements in the current process.",
       "The Settings pane lists installed applications and stores global and per-application enable switches in the package preferences domain.",
+      "Each newly completed achievement requests its own Game Center completion banner, so the user can see every achievement unlocked during the sync.",
       "Requires a GameKit host, MobileSubstrate-compatible injection, PreferenceLoader, and an authenticated Game Center account.",
       "Game Center behavior varies by game and account; this tweak does not guarantee success for every title or account."
     ],
