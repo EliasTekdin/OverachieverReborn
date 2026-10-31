@@ -45,7 +45,7 @@
   "package": {
     "id": "com.ilyastekdin.overachieverreborn",
     "name": "Overachiever Reborn",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Community rebuild of Overachiever for rootless and roothide jailbreaks.",
     "longDescription": [
       "A community rebuild of Overachiever for modern rootless and roothide jailbreak environments.",
