@@ -201,6 +201,7 @@ __attribute__((constructor)) static void OverachieverInitialize(void) {
     // Apelin's confirm_loaded looks for this exact marker and build id under
     // the package id's subsystem. Keep the line, and keep it public.
     os_log(OverachieverLog(), "ApelinLoaded %{public}s in %{public}s", APELIN_BUILD_ID, getprogname());
+    os_log(OverachieverLog(), "Loaded Overachiever");
 
     Class localPlayerClass = objc_getClass("GKLocalPlayer");
     if (localPlayerClass != Nil) {
