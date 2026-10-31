@@ -12,10 +12,17 @@ The legacy preference file is read directly from:
 
 Set `OverachieverEnabled` to `false` to disable the behavior. If the key is absent, the tweak is enabled by default.
 
+## Settings
+
+The package includes a PreferenceLoader pane named **Overachiever Reborn** in Settings. It has a global switch and dynamically lists installed applications using `LSApplicationWorkspace`. Each application row stores an `ApplicationEnabled.<bundle identifier>` switch in the `com.ilyastekdin.overachieverreborn` preferences domain. The tweak listens for the pane's Darwin notification and re-reads the values without blocking the host thread.
+
+The original `com.apple.GameKit` filter is retained. The filter also recognises `GKLocalPlayer` so GameKit clients can be selected for injection; an application's switch is evaluated from the host application's bundle identifier when the tweak is loaded there.
+
 ## Requirements
 
 - A jailbroken iOS device with rootless or roothide injection support.
 - MobileSubstrate-compatible tweak injection.
+- PreferenceLoader for the Settings pane.
 - GameKit and an authenticated Game Center account.
 - A GameKit host selected by the package filter.
 

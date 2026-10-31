@@ -9,6 +9,7 @@
 #import <os/log.h>
 #import <substrate.h>
 #import <objc/runtime.h>
+#import <notify.h>
 
 static NSString * const kOverachieverPreferencesPath =
     @"/var/mobile/Library/Preferences/de.ingmarstein.overachiever.plist";
@@ -42,10 +43,34 @@ static NSMutableSet<NSString *> *OverachieverSubmittedIdentifiers(void) {
     return identifiers;
 }
 
+static id OverachieverPackagePreference(NSString *key) {
+    CFPropertyListRef value = CFPreferencesCopyAppValue((__bridge CFStringRef)key,
+                                                         CFSTR(APELIN_PACKAGE_ID));
+    return value == NULL ? nil : CFBridgingRelease(value);
+}
+
 static BOOL OverachieverIsEnabled(void) {
-    NSDictionary *preferences = [NSDictionary dictionaryWithContentsOfFile:kOverachieverPreferencesPath];
-    NSNumber *enabled = preferences[kOverachieverEnabledKey];
-    return enabled == nil || enabled.boolValue;
+    NSNumber *enabled = OverachieverPackagePreference(@"OverachieverEnabled");
+    if (![enabled isKindOfClass:[NSNumber class]]) {
+        NSDictionary *legacyPreferences =
+            [NSDictionary dictionaryWithContentsOfFile:kOverachieverPreferencesPath];
+        enabled = legacyPreferences[kOverachieverEnabledKey];
+    }
+    if ([enabled isKindOfClass:[NSNumber class]] && !enabled.boolValue) {
+        return NO;
+    }
+
+    NSString *bundleIdentifier = NSBundle.mainBundle.bundleIdentifier;
+    if (bundleIdentifier.length > 0 && ![bundleIdentifier isEqualToString:@"com.apple.GameKit"]) {
+        NSString *applicationKey =
+            [NSString stringWithFormat:@"ApplicationEnabled.%@", bundleIdentifier];
+        NSNumber *applicationEnabled = OverachieverPackagePreference(applicationKey);
+        if ([applicationEnabled isKindOfClass:[NSNumber class]] && !applicationEnabled.boolValue) {
+            os_log(OverachieverLog(), "Overachiever disabled for %{public}s", bundleIdentifier.UTF8String);
+            return NO;
+        }
+    }
+    return YES;
 }
 
 static void OverachieverRequestSync(NSString *reason);
@@ -197,6 +222,16 @@ static void OverachieverRequestSync(NSString *reason) {
     });
 }
 
+static void OverachieverRegisterPreferenceNotification(void) {
+    static int token;
+    notify_register_dispatch(APELIN_PACKAGE_ID "/changed",
+                             &token,
+                             OverachieverQueue(),
+                             ^(__unused int notificationToken) {
+        OverachieverRequestSync(@"preferencesChanged");
+    });
+}
+
 __attribute__((constructor)) static void OverachieverInitialize(void) {
     // Apelin's confirm_loaded looks for this exact marker and build id under
     // the package id's subsystem. Keep the line, and keep it public.
@@ -218,6 +253,7 @@ __attribute__((constructor)) static void OverachieverInitialize(void) {
                 usingBlock:^(__unused NSNotification *notification) {
         OverachieverRequestSync(@"authenticationChanged");
     }];
+    OverachieverRegisterPreferenceNotification();
 
     // Delay the first GameKit query until the host has completed its initial
     // setup; all GameKit work and state changes remain off the main thread.
